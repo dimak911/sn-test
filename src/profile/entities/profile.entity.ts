@@ -6,25 +6,26 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { IProfile } from '@src/profile/models/profile.interface';
 
 @Entity('sn_profile')
-export class Profile {
+export class Profile implements IProfile {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ name: 'first_name' })
+  @Column({ name: 'first_name', nullable: false })
   firstName: string;
 
-  @Column({ name: 'last_name' })
+  @Column({ name: 'last_name', nullable: true })
   lastName: string;
 
-  @Column({ name: 'avatar' })
+  @Column({ name: 'avatar', nullable: true })
   avatar: string;
 
-  @Column({ name: 'description' })
+  @Column({ name: 'description', nullable: true })
   description: string;
 
   @OneToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
 }

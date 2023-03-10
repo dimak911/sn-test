@@ -23,5 +23,5 @@ export class User {
 
   @OneToOne(() => Profile)
   @JoinColumn({ name: 'profile_id' })
-  profileId: Profile;
+  profile: Profile;
 }

@@ -1,12 +1,12 @@
-import type { RedisClientOptions } from 'redis';
-import { CacheModule, Module } from '@nestjs/common';
-import * as redisStore from 'cache-manager-redis-store';
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule } from "@nestjs/config";
-import { ProfileModule } from './profile/profile.module';
-import { UserModule } from './user/user.module';
-import { Profile } from './profile/entities/profile.entity';
-import { User } from './user/entities/user.entity';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { ProfileModule } from '@src/profile/profile.module';
+import { UserModule } from '@src/user/user.module';
+import { Profile } from '@src/profile/entities/profile.entity';
+import { User } from '@src/user/entities/user.entity';
+import { AuthModule } from '@src/auth/auth.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -21,17 +21,12 @@ import { User } from './user/entities/user.entity';
       entities: [User, Profile],
       synchronize: true,
     }),
-    CacheModule.register<RedisClientOptions>({
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      isGlobal: true,
-    }),
     ProfileModule,
     UserModule,
+    AuthModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {}
-

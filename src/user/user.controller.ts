@@ -1,42 +1,45 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
+  // Post,
+  // Body,
   Patch,
   Param,
-  Delete, UseInterceptors, CacheInterceptor, CacheTTL,
+  // Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
+// import { UpdateUserDto } from './dto/update-user.dto';
+import { LoggedInGuard } from '@src/auth/logged-in.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
+  @UseGuards(LoggedInGuard)
   @Get()
-  findAll() {
+  public findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  public findOneById(@Param('id') id: string) {
+    return this.userService.findById(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
+  // @Patch(':id')
+  // public update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  //   return this.userService.update(+id, updateUserDto);
+  // }
+  //
+  // @Delete(':id')
+  // public remove(@Param('id') id: string) {
+  //   return this.userService.remove(+id);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Patch('verify/:token')
+  public verify(@Param('token') token: string) {
+    return this.userService.verify(token);
   }
 }
