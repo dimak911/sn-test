@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 // import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
-import { LoggedInGuard } from '@src/auth/logged-in.guard';
+import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
 
 @Controller('user')
 export class UserController {

@@ -1,41 +1,39 @@
 import { NestFactory } from '@nestjs/core';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
-import * as connectRedis from 'connect-redis';
 import * as passport from 'passport';
-import { createClient } from 'redis';
 import { AppModule } from './app.module';
-
-const PORT = process.env.PORT;
-
-const redisClient = createClient({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-});
-
-const redisStore = connectRedis(session);
-
-export const sessionStore = new redisStore({ client: redisClient });
+import { ConnectionConfigService } from '@src/custom-config/connection-config.service';
+import { CustomConfigService } from '@src/custom-config/custom-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(cookieParser(process.env.REDIS_SECRET));
+  const config = app.get(CustomConfigService);
+  const COOKIE_MAX_AGE = eval(config.get<string>('COOKIE_MAX_AGE'));
+  const PORT = config.get<number>('PORT');
+  const connectionConfig = app.get(ConnectionConfigService);
+  const REDIS_SECRET = config.get<string>('REDIS_SECRET');
+  const APP_URL = config.get<string>('APP_URL');
 
-  const cookieMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+  app.use(cookieParser(REDIS_SECRET));
+  app.enableCors({
+    origin: APP_URL,
+    credentials: true,
+  });
 
   app.use(
     session({
-      secret: process.env.REDIS_SECRET,
-      store: sessionStore,
+      secret: REDIS_SECRET,
+      store: connectionConfig.initRedisSession(),
       cookie: {
         httpOnly: true,
-        maxAge: cookieMaxAge,
+        maxAge: COOKIE_MAX_AGE,
         secure: false,
       },
       resave: false,
       saveUninitialized: false,
-    }),
+    })
   );
 
   app.use(passport.initialize());
@@ -43,4 +41,5 @@ async function bootstrap() {
 
   await app.listen(PORT);
 }
+
 bootstrap();

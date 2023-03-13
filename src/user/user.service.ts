@@ -16,7 +16,7 @@ export class UserService {
     private readonly usersRepository: Repository<User>,
     private readonly profileService: ProfileService,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
+    private readonly mailService: MailService
   ) {}
 
   public async create(createUserDto: CreateUserDto) {
@@ -25,6 +25,7 @@ export class UserService {
       password: createUserDto.password,
       profile: await this.profileService.create({
         firstName: createUserDto.firstName,
+        lastName: createUserDto.lastName,
       }),
     });
 
@@ -73,7 +74,9 @@ export class UserService {
     const user = await this.findByEmail(email);
 
     if (!user) {
-      throw new BadRequestException(`No user found with email ${email}`);
+      throw new BadRequestException(
+        `No user found with email ${email}`
+      );
     }
 
     return user.isActive;

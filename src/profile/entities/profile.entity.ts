@@ -5,7 +5,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import { User } from '@src/user/entities/user.entity';
 import { IProfile } from '@src/profile/models/profile.interface';
 
 @Entity('sn_profile')

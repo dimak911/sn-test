@@ -9,7 +9,7 @@ import { Profile } from '@src/profile/entities/profile.entity';
 export class ProfileService {
   constructor(
     @InjectRepository(Profile)
-    private readonly profileRepository: Repository<Profile>,
+    private readonly profileRepository: Repository<Profile>
   ) {}
 
   public async create(createProfileDto: CreateProfileDto) {
@@ -26,7 +26,10 @@ export class ProfileService {
     return `This action returns a #${id} profile`;
   }
 
-  public async update(id: number, updateProfileDto: UpdateProfileDto) {
+  public async update(
+    id: number,
+    updateProfileDto: UpdateProfileDto
+  ) {
     return `This action updates a #${id} profile`;
   }
 

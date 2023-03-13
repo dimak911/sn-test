@@ -17,7 +17,7 @@ import { Active } from '@src/auth/guards/active.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post('signup')
   registerUser(@Body() user: CreateUserDto) {
     const response = this.authService.registerUser(user);
 

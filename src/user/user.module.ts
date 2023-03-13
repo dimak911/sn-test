@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '@src/user/entities/user.entity';
-import { ProfileModule } from '@src/profile/profile.module';
-import { MailModule } from '@src/mail/mail.module';
+import { Module } from "@nestjs/common";
+import { JwtModule } from "@nestjs/jwt";
+import { UserService } from "./user.service";
+import { UserController } from "./user.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "@src/user/entities/user.entity";
+import { ProfileModule } from "@src/profile/profile.module";
+import { MailModule } from "@src/mail/mail.module";
 
 @Module({
   imports: [
@@ -13,9 +13,9 @@ import { MailModule } from '@src/mail/mail.module';
     ProfileModule,
     MailModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'SECRET',
+      secret: process.env.JWT_SECRET || "SECRET",
       signOptions: {
-        expiresIn: '24h',
+        expiresIn: "24h",
       },
     }),
   ],

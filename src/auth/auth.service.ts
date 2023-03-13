@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
@@ -18,8 +17,13 @@ export class AuthService {
   public async validateUser(user: LoginUserDto) {
     const foundUser = await this.userService.findByEmail(user.email);
 
-    if (!foundUser || !(await compare(user.password, foundUser.password))) {
-      throw new UnauthorizedException('Incorrect username or password');
+    if (
+      !foundUser ||
+      !(await compare(user.password, foundUser.password))
+    ) {
+      throw new UnauthorizedException(
+        'Incorrect username or password'
+      );
     }
     const { password: _password, ...retUser } = foundUser;
 
@@ -27,10 +31,14 @@ export class AuthService {
   }
 
   public async registerUser(user: CreateUserDto) {
-    const existingUser = await this.userService.findByEmail(user.email);
+    const existingUser = await this.userService.findByEmail(
+      user.email
+    );
 
     if (existingUser) {
-      throw new BadRequestException('User email must be unique');
+      throw new BadRequestException(
+        `User with email ${user.email} already exists`
+      );
     }
 
     const hashPassword = await hash(user.password, 10);
@@ -41,7 +49,8 @@ export class AuthService {
     });
 
     return {
-      message: 'We send you a verification email. Please confirm it first.',
+      message:
+        'We send you a verification email. Please confirm it first.',
     };
   }
 }

@@ -14,11 +14,13 @@ export class Active implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const isUserActive = await this.userService.checkActivation(
-      request.body.email,
+      request.body.email
     );
 
     if (!isUserActive) {
-      throw new BadRequestException('Please, activate your email first.');
+      throw new BadRequestException(
+        'Please, activate your email first.'
+      );
     }
 
     return true;

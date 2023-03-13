@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { AuthSerializer } from './serialization.provider';
 import { UserModule } from '@src/user/user.module';
+import { CustomConfigModule } from '@src/custom-config/custom-config.module';
 
 @Module({
   imports: [

@@ -1,4 +1,4 @@
-import { IUser } from '@src/user/models/user.interface';
+import { IUser } from "@src/user/models/user.interface";
 
 export interface IProfile {
   readonly id: number;

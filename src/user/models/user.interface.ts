@@ -1,4 +1,4 @@
-import { IProfile } from '@src/profile/models/profile.interface';
+import { IProfile } from "@src/profile/models/profile.interface";
 
 export interface IUser {
   id: number;
