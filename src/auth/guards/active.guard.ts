@@ -17,11 +17,11 @@ export class Active implements CanActivate {
       request.body.email
     );
 
-    if (!isUserActive) {
-      throw new BadRequestException(
-        'Please, activate your email first.'
-      );
-    }
+    // if (!isUserActive) {
+    //   throw new BadRequestException(
+    //     'Please, activate your email first.'
+    //   );
+    // }
 
     return true;
   }

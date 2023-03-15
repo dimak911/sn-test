@@ -21,9 +21,7 @@ export class AuthService {
       !foundUser ||
       !(await compare(user.password, foundUser.password))
     ) {
-      throw new UnauthorizedException(
-        'Incorrect username or password'
-      );
+      throw new BadRequestException('Incorrect username or password');
     }
     const { password: _password, ...retUser } = foundUser;
 

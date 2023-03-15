@@ -5,6 +5,7 @@ import * as passport from 'passport';
 import { AppModule } from './app.module';
 import { ConnectionConfigService } from '@src/custom-config/connection-config.service';
 import { CustomConfigService } from '@src/custom-config/custom-config.service';
+import { ValidationPipe } from '@src/pipes/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +39,8 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(PORT);
 }

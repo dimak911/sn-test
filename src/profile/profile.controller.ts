@@ -12,6 +12,7 @@ import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
+import { FindOneParams } from '@src/profile/dto/find-one.params';
 
 @UseGuards(LoggedInGuard)
 @Controller('profile')
@@ -19,30 +20,30 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Post()
-  create(@Body() createProfileDto: CreateProfileDto) {
+  public create(@Body() createProfileDto: CreateProfileDto) {
     return this.profileService.create(createProfileDto);
   }
 
   @Get()
-  findAll() {
+  public findAll() {
     return this.profileService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  public findOne(@Param() { id }: FindOneParams) {
     return this.profileService.findOne(+id);
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  public update(
+    @Param() { id }: FindOneParams,
     @Body() updateProfileDto: UpdateProfileDto
   ) {
     return this.profileService.update(+id, updateProfileDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  public remove(@Param() { id }: FindOneParams) {
     return this.profileService.remove(+id);
   }
 }

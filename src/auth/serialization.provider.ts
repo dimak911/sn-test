@@ -10,14 +10,14 @@ export class AuthSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(
+  public serializeUser(
     user: IUser,
     done: (err: Error, user: { id: number }) => void
   ) {
     done(null, { id: user.id });
   }
 
-  async deserializeUser(
+  public async deserializeUser(
     payload: { id: number; role: string },
     done: (err: Error, user: Omit<IUser, 'password'>) => void
   ) {

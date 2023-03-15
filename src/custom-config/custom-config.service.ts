@@ -1,6 +1,6 @@
-import { ConfigService } from "@nestjs/config";
-import { Injectable } from "@nestjs/common";
-import { isNil } from "lodash";
+import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class CustomConfigService {

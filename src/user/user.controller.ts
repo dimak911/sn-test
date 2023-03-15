@@ -1,17 +1,14 @@
 import {
   Controller,
   Get,
-  // Post,
-  // Body,
   Patch,
   Param,
-  // Delete,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
 import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
+import { VerifyTokenParams } from '@src/user/dto/verify-token.params';
+import { FindOneUserParams } from '@src/user/dto/find-one-user.params';
 
 @Controller('user')
 export class UserController {
@@ -23,23 +20,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @UseGuards(LoggedInGuard)
   @Get(':id')
-  public findOneById(@Param('id') id: string) {
+  public findOneById(@Param() { id }: FindOneUserParams) {
     return this.userService.findById(+id);
   }
 
-  // @Patch(':id')
-  // public update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
-  //
-  // @Delete(':id')
-  // public remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
-
   @Patch('verify/:token')
-  public verify(@Param('token') token: string) {
+  public verify(@Param() { token }: VerifyTokenParams) {
     return this.userService.verify(token);
   }
 }

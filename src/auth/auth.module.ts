@@ -1,13 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { AuthSerializer } from './serialization.provider';
 import { UserModule } from '@src/user/user.module';
-import { CustomConfigModule } from '@src/custom-config/custom-config.module';
 
+@Global()
 @Module({
   imports: [
     PassportModule.register({
@@ -17,5 +16,6 @@ import { CustomConfigModule } from '@src/custom-config/custom-config.module';
   ],
   providers: [AuthService, LocalStrategy, AuthSerializer],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

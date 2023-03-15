@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@src/user/dto/create-user.dto';
-// import { UpdateUserDto } from '@src/user/dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -43,10 +42,6 @@ export class UserService {
   public async findByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOneBy({ email });
 
-    // if (!user) {
-    //   throw new BadRequestException(`No user found with email ${email}`);
-    // }
-
     return user;
   }
 
@@ -62,14 +57,6 @@ export class UserService {
     return retUser;
   }
 
-  // public async update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-  //
-  // public async remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
-
   public async checkActivation(email: string) {
     const user = await this.findByEmail(email);
 
@@ -79,7 +66,14 @@ export class UserService {
       );
     }
 
-    return user.isActive;
+    if (!user.isActive) {
+      throw new BadRequestException(
+        'Please, activate your email first.'
+      );
+    }
+
+    return;
+    // return user.isActive
   }
 
   private async generateToken(user: IUser) {

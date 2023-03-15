@@ -1,14 +1,12 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule } from "@nestjs/config";
-import { ProfileModule } from "@src/profile/profile.module";
-import { UserModule } from "@src/user/user.module";
-import { Profile } from "@src/profile/entities/profile.entity";
-import { User } from "@src/user/entities/user.entity";
-import { AuthModule } from "@src/auth/auth.module";
-import { MailModule } from "./mail/mail.module";
-import { CustomConfigModule } from "@src/custom-config/custom-config.module";
-import { ConnectionConfigService } from "@src/custom-config/connection-config.service";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { ProfileModule } from '@src/profile/profile.module';
+import { UserModule } from '@src/user/user.module';
+import { AuthModule } from '@src/auth/auth.module';
+import { MailModule } from './mail/mail.module';
+import { CustomConfigModule } from '@src/custom-config/custom-config.module';
+import { ConnectionConfigService } from '@src/custom-config/connection-config.service';
 
 @Module({
   imports: [
@@ -19,7 +17,9 @@ import { ConnectionConfigService } from "@src/custom-config/connection-config.se
     TypeOrmModule.forRootAsync({
       imports: [CustomConfigModule],
       inject: [ConnectionConfigService],
-      useFactory: (connectionConfigService: ConnectionConfigService) => {
+      useFactory: (
+        connectionConfigService: ConnectionConfigService
+      ) => {
         return connectionConfigService.initTypeOrmConnection();
       },
     }),
