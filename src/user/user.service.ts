@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@src/user/entities/user.entity';
 import { ProfileService } from '@src/profile/profile.service';
-import { IUser } from '@src/user/models/user.interface';
 import { MailService } from '@src/mail/mail.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -18,7 +18,7 @@ export class UserService {
     private readonly mailService: MailService
   ) {}
 
-  public async create(createUserDto: CreateUserDto) {
+  public async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create({
       email: createUserDto.email,
       password: createUserDto.password,
@@ -35,7 +35,35 @@ export class UserService {
     return retUser;
   }
 
-  public async findAll() {
+  public async registerUser(
+    user: CreateUserDto
+  ): Promise<{ message: string }> {
+    const existingUser = await this.findByEmail(user.email);
+
+    if (existingUser) {
+      throw new BadRequestException(
+        `User with email ${user.email} already exists`
+      );
+    }
+
+    const hashPassword = await this.hashUserPassword(user.password);
+
+    const newUser: User = await this.create({
+      ...user,
+      password: hashPassword,
+    });
+
+    return {
+      message:
+        'We send you a verification email. Please confirm it first.',
+    };
+  }
+
+  private async hashUserPassword(password): Promise<string> {
+    return await bcrypt.hash(password, 10);
+  }
+
+  public async findAll(): Promise<string> {
     return `This action returns all user`;
   }
 
@@ -45,8 +73,8 @@ export class UserService {
     return user;
   }
 
-  public async findById(id: number) {
-    const user: IUser = await this.usersRepository.findOneBy({ id });
+  public async findById(id: number): Promise<Omit<User, 'password'>> {
+    const user: User = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
       throw new BadRequestException(`No user found with id ${id}`);
@@ -57,33 +85,13 @@ export class UserService {
     return retUser;
   }
 
-  public async checkActivation(email: string) {
-    const user = await this.findByEmail(email);
-
-    if (!user) {
-      throw new BadRequestException(
-        `No user found with email ${email}`
-      );
-    }
-
-    if (!user.isActive) {
-      throw new BadRequestException(
-        'Please, activate your email first.'
-      );
-    }
-
-    return;
-    // return user.isActive
-  }
-
-  private async generateToken(user: IUser) {
+  private async generateToken(user: User): Promise<string> {
     const payload = { email: user.email, id: user.id };
-    const token = this.jwtService.sign(payload);
 
-    return token;
+    return this.jwtService.sign(payload);
   }
 
-  public async verify(token: string) {
+  public async verifyEmail(token: string) {
     try {
       const payload = this.jwtService.verify(token);
 
@@ -97,7 +105,7 @@ export class UserService {
     }
   }
 
-  public async sendMail(user: IUser) {
+  public async sendMail(user: User): Promise<void> {
     const token = await this.generateToken(user);
 
     this.mailService.sendVerificationEmail(user.email, token);

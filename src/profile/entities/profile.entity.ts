@@ -1,18 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import { User } from '@src/user/entities/user.entity';
-import { IProfile } from '@src/profile/models/profile.interface';
+import { BaseEntity } from '@src/common/entities/base.entity';
 
 @Entity('sn_profile')
-export class Profile implements IProfile {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
-
+export class Profile extends BaseEntity {
   @Column({ name: 'first_name', nullable: false })
   firstName: string;
 

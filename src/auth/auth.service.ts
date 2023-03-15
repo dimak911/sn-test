@@ -1,54 +1,45 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { compare, hash } from 'bcrypt';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { LoginUserDto } from '@src/auth/dto/login-user.dto';
-import { CreateUserDto } from '@src/user/dto/create-user.dto';
 import { UserService } from '@src/user/user.service';
-import { IUser } from '@src/user/models/user.interface';
+import { User } from '@src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  public async validateUser(user: LoginUserDto) {
-    const foundUser = await this.userService.findByEmail(user.email);
+  public async validateUser(
+    user: LoginUserDto
+  ): Promise<Omit<User, 'password'>> {
+    const foundUser: User = await this.userService.findByEmail(
+      user.email
+    );
 
-    if (
-      !foundUser ||
-      !(await compare(user.password, foundUser.password))
-    ) {
+    const isPasswordValid: boolean = await this.compareUserPassword(
+      user.password,
+      foundUser.password
+    );
+
+    if (!foundUser || !isPasswordValid) {
       throw new BadRequestException('Incorrect username or password');
     }
+
+    if (!foundUser.isActive) {
+      throw new BadRequestException(
+        'Please, activate your email first.'
+      );
+    }
+
     const { password: _password, ...retUser } = foundUser;
 
     return retUser;
   }
 
-  public async registerUser(user: CreateUserDto) {
-    const existingUser = await this.userService.findByEmail(
-      user.email
-    );
-
-    if (existingUser) {
-      throw new BadRequestException(
-        `User with email ${user.email} already exists`
-      );
-    }
-
-    const hashPassword = await hash(user.password, 10);
-
-    const newUser: IUser = await this.userService.create({
-      ...user,
-      password: hashPassword,
-    });
-
-    return {
-      message:
-        'We send you a verification email. Please confirm it first.',
-    };
+  private async compareUserPassword(
+    candidatePassword,
+    password
+  ): Promise<boolean> {
+    return await bcrypt.compare(candidatePassword, password);
   }
 }
