@@ -23,6 +23,7 @@ export class UserController {
   @UseGuards(LoggedInGuard)
   @Get(':id')
   public findOneById(@Param() { id }: FindOneUserParams) {
+    console.log('id: ', id);
     return this.userService.findById(+id);
   }
 
