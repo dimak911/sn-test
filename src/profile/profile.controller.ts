@@ -20,16 +20,17 @@ export class ProfileController {
 
   @Get(':id')
   public findOneById(
-    @Param() { id }: IdParams
+    @Param()
+    { id }: IdParams
   ): Promise<ProfileResponseDto> {
-    return this.profileService.findOneById(+id);
+    return this.profileService.findOneById(id);
   }
 
   @Get()
   public findOne(
     @Session() session: Record<string, any>
   ): Promise<ProfileResponseDto> {
-    return this.profileService.findOne(+session.passport.user.id);
+    return this.profileService.findOne(session.passport.user.id);
   }
 
   @Patch()
@@ -38,7 +39,7 @@ export class ProfileController {
     @Session() session: Record<string, any>
   ): Promise<ProfileResponseDto> {
     return this.profileService.update(
-      +session.passport.user.id,
+      session.passport.user.id,
       updateProfileDto
     );
   }

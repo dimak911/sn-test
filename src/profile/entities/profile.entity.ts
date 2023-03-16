@@ -7,13 +7,13 @@ export class Profile extends BaseEntity {
   @Column({ name: 'first_name', nullable: false })
   firstName: string;
 
-  @Column({ name: 'last_name', default: '' })
+  @Column({ name: 'last_name', nullable: true })
   lastName: string;
 
-  @Column({ name: 'avatar', default: '' })
+  @Column({ name: 'avatar', nullable: true })
   avatar: string;
 
-  @Column({ name: 'description', default: '' })
+  @Column({ name: 'description', nullable: true })
   description: string;
 
   @OneToOne(() => User, ({ profile }) => profile)

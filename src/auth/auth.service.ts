@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
 
 import { LoginUserDto } from '@src/auth/dto/login-user.dto';
 import { UserService } from '@src/user/user.service';
 import { User } from '@src/user/entities/user.entity';
+import { UserResponseDto } from '@src/common/dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
 
   public async validateUser(
     user: LoginUserDto
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<UserResponseDto> {
     const foundUser: User = await this.userService.findByEmail(
       user.email
     );
@@ -33,15 +34,13 @@ export class AuthService {
       );
     }
 
-    const { password: _password, ...retUser } = foundUser;
-
-    return retUser;
+    return this.userService.mapUserToUserResponseDto(foundUser);
   }
 
   private async compareUserPassword(
     candidatePassword,
     password
   ): Promise<boolean> {
-    return await bcrypt.compare(candidatePassword, password);
+    return await compare(candidatePassword, password);
   }
 }

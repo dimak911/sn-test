@@ -6,8 +6,8 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@src/user/entities/user.entity';
 import { ProfileService } from '@src/profile/profile.service';
 import { MailService } from '@src/mail/mail.service';
-import * as bcrypt from 'bcrypt';
-import { UserResponseDto } from '@src/user/dto/user-response.dto';
+import { hash } from 'bcrypt';
+import { UserResponseDto } from '@src/common/dto/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -58,7 +58,7 @@ export class UserService {
   }
 
   private async hashUserPassword(password): Promise<string> {
-    return await bcrypt.hash(password, 10);
+    return await hash(password, 10);
   }
 
   public async findByEmail(email: string): Promise<User> {
@@ -103,7 +103,7 @@ export class UserService {
     this.mailService.sendVerificationEmail(user.email, token);
   }
 
-  private mapUserToUserResponseDto(user: User): UserResponseDto {
+  public mapUserToUserResponseDto(user: User): UserResponseDto {
     const response = new UserResponseDto();
 
     response.id = user.id;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserService } from '@src/user/user.service';
 import { User } from '@src/user/entities/user.entity';
-import { UserResponseDto } from '@src/user/dto/user-response.dto';
+import { UserResponseDto } from '@src/common/dto/user-response.dto';
 
 @Injectable()
 export class AuthSerializer extends PassportSerializer {
