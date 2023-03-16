@@ -16,10 +16,12 @@ export class AuthService {
       user.email
     );
 
-    const isPasswordValid: boolean = await this.compareUserPassword(
-      user.password,
-      foundUser.password
-    );
+    const isPasswordValid: boolean = foundUser
+      ? await this.compareUserPassword(
+          user.password,
+          foundUser.password
+        )
+      : false;
 
     if (!foundUser || !isPasswordValid) {
       throw new BadRequestException('Incorrect username or password');

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserService } from '@src/user/user.service';
 import { User } from '@src/user/entities/user.entity';
+import { UserResponseDto } from '@src/user/dto/user-response.dto';
 
 @Injectable()
 export class AuthSerializer extends PassportSerializer {
@@ -18,7 +19,7 @@ export class AuthSerializer extends PassportSerializer {
 
   public async deserializeUser(
     payload: { id: number; role: string },
-    done: (err: Error, user: Omit<User, 'password'>) => void
+    done: (err: Error, user: UserResponseDto) => void
   ) {
     const user = await this.userService.findById(payload.id);
     done(null, user);

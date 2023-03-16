@@ -14,6 +14,6 @@ export class User extends BaseEntity {
   isActive: boolean;
 
   @OneToOne(() => Profile)
-  @JoinColumn({ name: 'profile_id' })
+  @JoinColumn({ name: 'profile_id', referencedColumnName: 'id' })
   profile: Profile;
 }

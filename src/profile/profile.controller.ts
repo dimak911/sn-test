@@ -1,52 +1,45 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
+  Session,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
 import { IdParams } from '@src/common/dto/id.params';
-import { Profile } from '@src/profile/entities/profile.entity';
+import { ProfileResponseDto } from '@src/profile/dto/profile-response.dto';
 
 @UseGuards(LoggedInGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Post()
-  public create(
-    @Body() createProfileDto: CreateProfileDto
-  ): Promise<Profile> {
-    return this.profileService.create(createProfileDto);
+  @Get(':id')
+  public findOneById(
+    @Param() { id }: IdParams
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.findOneById(+id);
   }
 
   @Get()
-  public findAll(): Promise<string> {
-    return this.profileService.findAll();
+  public findOne(
+    @Session() session: Record<string, any>
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.findOne(+session.passport.user.id);
   }
 
-  @Get(':id')
-  public findOne(@Param() { id }: IdParams): Promise<string> {
-    return this.profileService.findOne(+id);
-  }
-
-  @Patch(':id')
+  @Patch()
   public update(
-    @Param() { id }: IdParams,
-    @Body() updateProfileDto: UpdateProfileDto
-  ): Promise<string> {
-    return this.profileService.update(+id, updateProfileDto);
-  }
-
-  @Delete(':id')
-  public remove(@Param() { id }: IdParams): Promise<string> {
-    return this.profileService.remove(+id);
+    @Body() updateProfileDto: UpdateProfileDto,
+    @Session() session: Record<string, any>
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.update(
+      +session.passport.user.id,
+      updateProfileDto
+    );
   }
 }

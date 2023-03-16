@@ -13,6 +13,7 @@ import { IdParams } from '@src/common/dto/id.params';
 import { TokenParams } from '@src/common/dto/token.params';
 import { CreateUserDto } from '@src/user/dto/create-user.dto';
 import { User } from '@src/user/entities/user.entity';
+import { UserResponseDto } from '@src/user/dto/user-response.dto';
 
 @Controller('user')
 export class UserController {
@@ -26,16 +27,10 @@ export class UserController {
   }
 
   @UseGuards(LoggedInGuard)
-  @Get()
-  public findAll(): Promise<string> {
-    return this.userService.findAll();
-  }
-
-  @UseGuards(LoggedInGuard)
   @Get(':id')
   public findOneById(
     @Param() { id }: IdParams
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<UserResponseDto> {
     return this.userService.findById(+id);
   }
 

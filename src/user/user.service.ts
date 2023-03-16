@@ -7,6 +7,7 @@ import { User } from '@src/user/entities/user.entity';
 import { ProfileService } from '@src/profile/profile.service';
 import { MailService } from '@src/mail/mail.service';
 import * as bcrypt from 'bcrypt';
+import { UserResponseDto } from '@src/user/dto/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -48,10 +49,7 @@ export class UserService {
 
     const hashPassword = await this.hashUserPassword(user.password);
 
-    const newUser: User = await this.create({
-      ...user,
-      password: hashPassword,
-    });
+    await this.create({ ...user, password: hashPassword });
 
     return {
       message:
@@ -63,26 +61,20 @@ export class UserService {
     return await bcrypt.hash(password, 10);
   }
 
-  public async findAll(): Promise<string> {
-    return `This action returns all user`;
-  }
-
   public async findByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOneBy({ email });
 
     return user;
   }
 
-  public async findById(id: number): Promise<Omit<User, 'password'>> {
+  public async findById(id: number): Promise<UserResponseDto> {
     const user: User = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
       throw new BadRequestException(`No user found with id ${id}`);
     }
 
-    const { password: _, ...retUser } = user;
-
-    return retUser;
+    return this.mapUserToUserResponseDto(user);
   }
 
   private async generateToken(user: User): Promise<string> {
@@ -109,5 +101,15 @@ export class UserService {
     const token = await this.generateToken(user);
 
     this.mailService.sendVerificationEmail(user.email, token);
+  }
+
+  private mapUserToUserResponseDto(user: User): UserResponseDto {
+    const response = new UserResponseDto();
+
+    response.id = user.id;
+    response.email = user.email;
+    response.isActive = user.isActive;
+
+    return response;
   }
 }
