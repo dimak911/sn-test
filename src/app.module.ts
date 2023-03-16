@@ -7,6 +7,8 @@ import { AuthModule } from '@src/auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { CustomConfigModule } from '@src/custom-config/custom-config.module';
 import { ConnectionConfigService } from '@src/custom-config/connection-config.service';
+import { AppController } from '@src/app.controller';
+import { AppService } from '@src/app.service';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { ConnectionConfigService } from '@src/custom-config/connection-config.se
     AuthModule,
     MailModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

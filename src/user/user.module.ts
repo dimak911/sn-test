@@ -4,14 +4,12 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '@src/user/entities/user.entity';
-import { ProfileModule } from '@src/profile/profile.module';
 import { MailModule } from '@src/mail/mail.module';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    ProfileModule,
     MailModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'SECRET',

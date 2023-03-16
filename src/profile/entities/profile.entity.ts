@@ -1,18 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToOne } from 'typeorm';
+import { BaseEntity } from '@src/common/entities/base.entity';
 import { User } from '@src/user/entities/user.entity';
-import { IProfile } from '@src/profile/models/profile.interface';
 
 @Entity('sn_profile')
-export class Profile implements IProfile {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
-
+export class Profile extends BaseEntity {
   @Column({ name: 'first_name', nullable: false })
   firstName: string;
 
@@ -25,7 +16,6 @@ export class Profile implements IProfile {
   @Column({ name: 'description', nullable: true })
   description: string;
 
-  @OneToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @OneToOne(() => User, ({ profile }) => profile)
   user: User;
 }

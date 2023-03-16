@@ -1,49 +1,46 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
+  Session,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
-import { FindOneParams } from '@src/profile/dto/find-one.params';
+import { IdParams } from '@src/common/dto/id.params';
+import { ProfileResponseDto } from '@src/profile/dto/profile-response.dto';
 
 @UseGuards(LoggedInGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Post()
-  public create(@Body() createProfileDto: CreateProfileDto) {
-    return this.profileService.create(createProfileDto);
+  @Get(':id')
+  public findOneById(
+    @Param()
+    { id }: IdParams
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.findOneById(id);
   }
 
   @Get()
-  public findAll() {
-    return this.profileService.findAll();
+  public findOne(
+    @Session() session: Record<string, any>
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.findOne(session.passport.user.id);
   }
 
-  @Get(':id')
-  public findOne(@Param() { id }: FindOneParams) {
-    return this.profileService.findOne(+id);
-  }
-
-  @Patch(':id')
+  @Patch()
   public update(
-    @Param() { id }: FindOneParams,
-    @Body() updateProfileDto: UpdateProfileDto
-  ) {
-    return this.profileService.update(+id, updateProfileDto);
-  }
-
-  @Delete(':id')
-  public remove(@Param() { id }: FindOneParams) {
-    return this.profileService.remove(+id);
+    @Body() updateProfileDto: UpdateProfileDto,
+    @Session() session: Record<string, any>
+  ): Promise<ProfileResponseDto> {
+    return this.profileService.update(
+      session.passport.user.id,
+      updateProfileDto
+    );
   }
 }

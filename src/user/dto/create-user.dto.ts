@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
 } from 'class-validator';
@@ -19,5 +20,6 @@ export class CreateUserDto {
   readonly firstName: string;
 
   @IsString({ message: 'Field must be a string' })
+  @IsOptional()
   readonly lastName?: string;
 }

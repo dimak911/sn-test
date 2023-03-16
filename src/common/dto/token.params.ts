@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class FindOneUserParams {
+export class TokenParams {
   @IsNotEmpty()
   @IsString()
-  id: string;
+  token: string;
 }
