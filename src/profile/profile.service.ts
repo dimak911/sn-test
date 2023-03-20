@@ -1,16 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Profile } from '@src/profile/entities/profile.entity';
 import { ProfileResponseDto } from '@src/profile/dto/profile-response.dto';
+import { PublicFileService } from '@src/public-file/public-file.service';
+import { ProfileRepository } from '@src/profile/repositories/profile.repository';
+import { MinioClientService } from '@src/minio-client/minio-client.service';
 
 @Injectable()
 export class ProfileService {
   constructor(
-    @InjectRepository(Profile)
-    private readonly profileRepository: Repository<Profile>
+    private readonly profileRepository: ProfileRepository,
+    private readonly publicFileService: PublicFileService,
+    private readonly minioClientService: MinioClientService
   ) {}
 
   public async create(
@@ -36,13 +38,27 @@ export class ProfileService {
     return this.mapProfileToProfileResponseDto(foundProfile);
   }
 
-  public async findOne(userId: number): Promise<ProfileResponseDto> {
+  public async findOne(userId: number): Promise<Profile> {
     const profile = await this.profileRepository.findOne({
       where: { user: { id: userId } },
+      join: {
+        leftJoinAndSelect: {
+          avatar: 'profile.avatar',
+        },
+        alias: 'profile',
+      },
     });
 
     if (!profile)
       throw new BadRequestException(`No profile with id: ${userId}`);
+
+    return profile;
+  }
+
+  public async findOneAndMap(
+    userId: number
+  ): Promise<ProfileResponseDto> {
+    const profile = await this.findOne(userId);
 
     return this.mapProfileToProfileResponseDto(profile);
   }
@@ -51,7 +67,7 @@ export class ProfileService {
     id: number,
     updateProfileDto: UpdateProfileDto
   ): Promise<ProfileResponseDto> {
-    const profile = await this.findOne(id);
+    const profile = await this.findOneAndMap(id);
 
     const updatedProfile = await this.profileRepository.save({
       ...profile,
@@ -69,9 +85,38 @@ export class ProfileService {
     response.id = profile.id;
     response.firstName = profile.firstName;
     response.lastName = profile.lastName;
-    response.avatar = profile.avatar;
+    response.avatar = profile.avatar
+      ? this.publicFileService.mapPublicFileToPublicFileResponseDto(
+          profile.avatar
+        )
+      : null;
     response.description = profile.description;
 
     return response;
+  }
+
+  public async updateAvatar(
+    file: Express.Multer.File,
+    userId: number
+  ): Promise<ProfileResponseDto> {
+    const profile = await this.findOne(userId);
+
+    const oldAvatar = await this.publicFileService.findOne(
+      profile.avatar?.id
+    );
+
+    const avatar = await this.publicFileService.createAvatarFile(
+      file
+    );
+
+    const resProfile =
+      await this.profileRepository.changeOrSaveAvatar(
+        avatar,
+        profile
+      );
+
+    await this.minioClientService.deleteFile(oldAvatar?.key);
+
+    return this.mapProfileToProfileResponseDto(resProfile);
   }
 }
