@@ -1,17 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
-import { Profile } from '../../profile/entities/profile.entity';
+import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Profile } from '@src/profile/entities/profile.entity';
+import { BaseEntity } from '@src/common/entities/base.entity';
 
 @Entity('sn_user')
-export class User {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
-
+export class User extends BaseEntity {
   @Column({ name: 'email', unique: true })
   email: string;
 
@@ -22,6 +14,6 @@ export class User {
   isActive: boolean;
 
   @OneToOne(() => Profile)
-  @JoinColumn({ name: 'profile_id' })
+  @JoinColumn({ name: 'profile_id', referencedColumnName: 'id' })
   profile: Profile;
 }

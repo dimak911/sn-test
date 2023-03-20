@@ -4,31 +4,39 @@ import {
   Patch,
   Param,
   UseGuards,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LoggedInGuard } from '@src/auth/guards/logged-in.guard';
-import { VerifyTokenParams } from '@src/user/dto/verify-token.params';
-import { FindOneUserParams } from '@src/user/dto/find-one-user.params';
+import { IdParams } from '@src/common/dto/id.params';
+import { TokenParams } from '@src/common/dto/token.params';
+import { CreateUserDto } from '@src/user/dto/create-user.dto';
+import { UserResponseDto } from '@src/common/dto/user-response.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(LoggedInGuard)
-  @Get()
-  public findAll() {
-    return this.userService.findAll();
+  @Post('signup')
+  public registerUser(
+    @Body() user: CreateUserDto
+  ): Promise<{ message: string }> {
+    return this.userService.registerUser(user);
   }
 
   @UseGuards(LoggedInGuard)
   @Get(':id')
-  public findOneById(@Param() { id }: FindOneUserParams) {
-    console.log('id: ', id);
-    return this.userService.findById(+id);
+  public findOneById(
+    @Param() { id }: IdParams
+  ): Promise<UserResponseDto> {
+    return this.userService.findById(id);
   }
 
   @Patch('verify/:token')
-  public verify(@Param() { token }: VerifyTokenParams) {
-    return this.userService.verify(token);
+  public verify(
+    @Param() { token }: TokenParams
+  ): Promise<{ message: string }> {
+    return this.userService.verifyEmail(token);
   }
 }

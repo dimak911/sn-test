@@ -10,7 +10,7 @@ export class MailService {
     );
   }
 
-  public sendVerificationEmail(email: string, token: string) {
+  public sendVerificationEmail(email: string, token: string): void {
     const msg = {
       to: email,
       from: this.configService.get<string>('SENDGRID_SENDER'),
