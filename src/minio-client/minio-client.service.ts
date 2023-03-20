@@ -4,6 +4,7 @@ import { ConnectionConfigService } from '@src/custom-config/connection-config.se
 import { CustomConfigService } from '@src/custom-config/custom-config.service';
 import { policySettingsConst } from '@src/minio-client/consts/policy-settings.const';
 import { Readable as ReadableStream } from 'stream';
+import { fileTypesConst } from '@src/minio-client/consts/file-types.const';
 
 @Injectable()
 export class MinioClientService {
@@ -42,23 +43,20 @@ export class MinioClientService {
     }
   }
 
+  private createFileName(originalName: string): string {
+    return `${Date.now()}-${originalName}`;
+  }
+
   public async uploadFile(
     file: Express.Multer.File
   ): Promise<string> {
-    if (
-      !(
-        file.mimetype.includes('jpeg') ||
-        file.mimetype.includes('png') ||
-        file.mimetype.includes('svg') ||
-        file.mimetype.includes('mp4')
-      )
-    ) {
+    if (!fileTypesConst.includes(file.mimetype)) {
       throw new BadRequestException('File type not supported');
     }
 
     await this.createBucketIfNotExists();
 
-    const fileName = `${Date.now()}-${file.originalname}`;
+    const fileName = this.createFileName(file.originalname);
 
     const metaData = {
       'Content-Type': file.mimetype,
